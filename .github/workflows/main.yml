@@ -4,20 +4,20 @@ on:
   push:
     branches:
     - main
+
 jobs:
-  deploy-env:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials and Deploy to S3 bucket
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-           command: cp
-           source: ./protfolio/
-           destination: s3://my-test-portfolio-bucket/protfolio/
-           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           aws-region: us-east-2
-           
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Deploy website to S3 bucket
+      run: aws s3 sync . s3://my-test-portfolio-bucket --delete
